@@ -1,0 +1,17 @@
+###save
+POST http://localhost:8080/sessions
+Accept: application/json
+Content-Type: application/json
+
+{
+  "login": "Helmut"
+}
+
+###findByLogin
+GET http://localhost:8080/sessions
+Accept: application/json
+Content-Type: application/json
+
+{
+  "login": "Helmut"
+}
