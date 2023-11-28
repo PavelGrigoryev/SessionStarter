@@ -1,5 +1,7 @@
 package ru.clevertec.starter.sevice;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import ru.clevertec.starter.model.Session;
 
 import java.time.LocalDateTime;
@@ -8,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+@Slf4j
 public class SessionService {
 
     private final Map<String, Session> sessions;
@@ -31,6 +34,14 @@ public class SessionService {
             session = save(login);
         }
         return session;
+    }
+
+    @Scheduled(cron = "${session.aware.clean.cron}")
+    private void clean() {
+        LocalDateTime now = LocalDateTime.now();
+        sessions.entrySet()
+                .removeIf(entry -> entry.getValue().getOpeningTime().isBefore(now));
+        log.warn("Cleared all sessions until {}", now);
     }
 
 }

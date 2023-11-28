@@ -14,3 +14,6 @@ spring:
 session:
   aware:
     enabled: true
+    clean:
+      enabled: true
+      cron: "00 00 00 * * *"

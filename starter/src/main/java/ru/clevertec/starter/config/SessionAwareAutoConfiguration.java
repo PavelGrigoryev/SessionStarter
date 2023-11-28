@@ -15,8 +15,8 @@ import ru.clevertec.starter.sevice.SessionService;
 @Slf4j
 @AutoConfiguration
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-@EnableConfigurationProperties(SessionAwareProperties.class)
-@ConditionalOnClass(SessionAwareProperties.class)
+@EnableConfigurationProperties({SessionAwareProperties.class, SessionCleanerProperties.class})
+@ConditionalOnClass({SessionAwareProperties.class, SessionCleanerProperties.class})
 @ConditionalOnProperty(prefix = "session.aware", name = "enabled", havingValue = "true")
 public class SessionAwareAutoConfiguration {
 
