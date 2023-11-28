@@ -5,6 +5,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.lang.NonNull;
 import ru.clevertec.starter.annotation.SessionAware;
 import ru.clevertec.starter.sevice.SessionAwareInterceptor;
 import ru.clevertec.starter.sevice.SessionService;
@@ -22,25 +23,23 @@ public class SessionAwareBeanPostProcessor implements BeanPostProcessor, BeanFac
     private BeanFactory beanFactory;
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, @NonNull String beanName) throws BeansException {
         Class<?> clazz = bean.getClass();
-        boolean annotationPresent = Arrays.stream(clazz.getMethods())
-                .anyMatch(method -> method.isAnnotationPresent(SessionAware.class));
-        if (annotationPresent) {
-            beanNamesWithAnnotatedMethodsMap.put(beanName, clazz);
-        }
+        Arrays.stream(clazz.getMethods())
+                .filter(method -> method.isAnnotationPresent(SessionAware.class))
+                .forEach(method -> beanNamesWithAnnotatedMethodsMap.put(beanName, clazz));
         return bean;
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
         return Optional.ofNullable(beanNamesWithAnnotatedMethodsMap.get(beanName))
                 .map(clazz -> getSessionAwareProxy(bean))
                 .orElse(bean);
     }
 
     @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+    public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
     }
 
@@ -59,15 +58,15 @@ public class SessionAwareBeanPostProcessor implements BeanPostProcessor, BeanFac
                 .anyMatch(constructor -> constructor.getParameterCount() == 0);
     }
 
-    private Class<?>[] getNotDefaultConstructorArgTypes(Object object) {
-        return Arrays.stream(object.getClass().getConstructors())
+    private Class<?>[] getNotDefaultConstructorArgTypes(Object bean) {
+        return Arrays.stream(bean.getClass().getConstructors())
                 .max(Comparator.comparingInt(Constructor::getParameterCount))
                 .map(Constructor::getParameterTypes)
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    private Object[] getNotDefaultConstructorArgs(Object object) {
-        Class<?>[] constructorArgTypes = getNotDefaultConstructorArgTypes(object);
+    private Object[] getNotDefaultConstructorArgs(Object bean) {
+        Class<?>[] constructorArgTypes = getNotDefaultConstructorArgTypes(bean);
         return Arrays.stream(constructorArgTypes)
                 .map(beanFactory::getBean)
                 .toArray();

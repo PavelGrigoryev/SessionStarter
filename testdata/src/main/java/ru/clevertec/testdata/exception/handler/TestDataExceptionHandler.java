@@ -13,7 +13,7 @@ import ru.clevertec.testdata.exception.model.ExceptionResponse;
 
 @Slf4j
 @ControllerAdvice
-public class SessionExceptionHandler {
+public class TestDataExceptionHandler {
 
     @ExceptionHandler(UniqueException.class)
     public ResponseEntity<ExceptionResponse> handleUniqueException(UniqueException exception) {
