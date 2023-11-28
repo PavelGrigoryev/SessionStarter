@@ -5,10 +5,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import ru.clevertec.starter.model.Session;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class SessionService {
@@ -16,7 +16,7 @@ public class SessionService {
     private final Map<String, Session> sessions;
 
     public SessionService() {
-        sessions = new HashMap<>();
+        sessions = new ConcurrentHashMap<>();
     }
 
     public Session save(String login) {

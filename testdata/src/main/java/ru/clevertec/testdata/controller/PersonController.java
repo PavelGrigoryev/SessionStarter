@@ -27,7 +27,7 @@ public class PersonController {
 
     private final PersonService personService;
 
-    @SessionAware
+    @SessionAware(blackList = {"Ann", "Sasha"})
     @GetMapping("/{id}")
     public ResponseEntity<PersonResponse> findById(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false)
                                                    Authorization authorization,

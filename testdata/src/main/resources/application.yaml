@@ -17,3 +17,6 @@ session:
     clean:
       enabled: true
       cron: "00 00 00 * * *"
+    black-list:
+      - Helmut35
+      - Sasha

@@ -1,4 +1,3 @@
 rootProject.name = 'SessionStarter'
-include 'session',
-        'starter',
+include 'starter',
         'testdata'
