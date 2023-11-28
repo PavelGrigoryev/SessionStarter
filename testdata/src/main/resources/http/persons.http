@@ -9,7 +9,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "login": "Helmut35",
+  "login": "Helmut",
   "password": "qwerty123",
   "name": "Aleksandr"
 }

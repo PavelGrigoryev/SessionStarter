@@ -1,4 +1,4 @@
-package ru.clevertec.starter.config;
+package ru.clevertec.starter.property;
 
 import lombok.Data;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class SessionCleanerProperties {
 
     private boolean enabled;
-
     private String cron;
 
 }

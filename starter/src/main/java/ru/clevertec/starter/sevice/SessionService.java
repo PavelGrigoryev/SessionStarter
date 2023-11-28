@@ -38,10 +38,8 @@ public class SessionService {
 
     @Scheduled(cron = "${session.aware.clean.cron}")
     private void clean() {
-        LocalDateTime now = LocalDateTime.now();
-        sessions.entrySet()
-                .removeIf(entry -> entry.getValue().getOpeningTime().isBefore(now));
-        log.warn("Cleared all sessions until {}", now);
+        sessions.clear();
+        log.warn("Cleared all sessions until {}", LocalDateTime.now());
     }
 
 }

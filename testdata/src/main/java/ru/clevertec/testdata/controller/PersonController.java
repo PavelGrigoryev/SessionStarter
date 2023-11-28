@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.starter.annotation.SessionAware;
 import ru.clevertec.starter.model.Authorization;
 import ru.clevertec.starter.model.Session;
+import ru.clevertec.starter.sevice.DefaultBlackListHandler;
 import ru.clevertec.testdata.dto.PersonRequest;
 import ru.clevertec.testdata.dto.PersonResponse;
 import ru.clevertec.testdata.service.PersonService;
@@ -27,7 +28,7 @@ public class PersonController {
 
     private final PersonService personService;
 
-    @SessionAware(blackList = {"Ann", "Sasha"})
+    @SessionAware(blackList = {"Ann", "Sasha"}, blackListHandlers = DefaultBlackListHandler.class)
     @GetMapping("/{id}")
     public ResponseEntity<PersonResponse> findById(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false)
                                                    Authorization authorization,

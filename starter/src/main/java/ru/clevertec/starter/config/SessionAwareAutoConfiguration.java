@@ -10,6 +10,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import ru.clevertec.starter.bpp.SessionAwareBeanPostProcessor;
+import ru.clevertec.starter.property.SessionAwareProperties;
+import ru.clevertec.starter.property.SessionCleanerProperties;
+import ru.clevertec.starter.sevice.BlackListHandler;
+import ru.clevertec.starter.sevice.DefaultBlackListHandler;
 import ru.clevertec.starter.sevice.SessionService;
 
 @Slf4j
@@ -30,9 +34,14 @@ public class SessionAwareAutoConfiguration {
         return new SessionService();
     }
 
+    @Bean
+    public BlackListHandler blackListHandler() {
+        return new DefaultBlackListHandler();
+    }
+
     @PostConstruct
     void init() {
-        log.warn("SessionAwareAutoConfiguration initialized");
+        log.info("SessionAwareAutoConfiguration initialized");
     }
 
 }
