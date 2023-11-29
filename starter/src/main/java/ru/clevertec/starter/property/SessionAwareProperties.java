@@ -12,6 +12,7 @@ import java.util.Set;
 public class SessionAwareProperties {
 
     private boolean enabled;
+    private String url;
     private Set<String> blackList = new HashSet<>();
     private Set<Class<? extends BlackListHandler>> blackListHandlers = new HashSet<>();
 

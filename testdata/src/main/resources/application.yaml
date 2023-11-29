@@ -14,6 +14,7 @@ spring:
 session:
   aware:
     enabled: true
+    url: http://localhost:8081/sessions
     clean:
       enabled: true
       cron: "00 00 00 * * *"

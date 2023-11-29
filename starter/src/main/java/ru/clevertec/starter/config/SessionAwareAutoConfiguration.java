@@ -47,9 +47,9 @@ public class SessionAwareAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(RestClient.class)
-    public RestClient defaultRestClient() {
+    public RestClient restClient(SessionAwareProperties properties) {
         return RestClient.builder()
-                .baseUrl("http://localhost:8081/sessions")
+                .baseUrl(properties.getUrl())
                 .defaultHeaders(headers -> {
                     headers.setAccept(List.of(MediaType.APPLICATION_JSON));
                     headers.setContentType(MediaType.APPLICATION_JSON);

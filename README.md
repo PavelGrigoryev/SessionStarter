@@ -44,12 +44,13 @@ dependencies {
 
 * Зависимости `'org.springframework.boot:spring-boot-starter-web'`
   и `'org.springframework.boot:spring-boot-starter-data-jpa'` входят в стартер и будут подтянуты транзитивно.
-* Добавить в application.yaml своего проекта:
+* Добавить в application.yaml своего проекта, где url это url сервиса хранения сессий:
 
  ````yaml
 session:
   aware:
     enabled: true
+    url: http://localhost:8081/sessions
 ````
 
 * Если хотим очищать хранилище сессий, то в application.yaml нужно добавить `clean.enabled:true` и задать хронометраж
@@ -60,6 +61,7 @@ session:
 session:
   aware:
     enabled: true
+    url: http://localhost:8081/sessions
     clean:
       enabled: true
       cron: "00 00 00 * * *"
@@ -109,6 +111,7 @@ session:
 session:
   aware:
     enabled: true
+    url: http://localhost:8081/sessions
     black-list:
       - Helmut35
       - Sasha
@@ -148,8 +151,8 @@ public class PersonController {
 }
 ````
 
-* P.S. Если хотим использовать свой модуль для хранения сессий, то нужно создать свой бин SessionAwareService и передать
-  в его конструктор свой RestClient. Пример:
+* P.S. Если хотим задать свои настройки для RestClient, то нужно создать свой бин SessionAwareService и передать
+  в его конструктор настроенный RestClient. Пример:
 
 ````java
 
