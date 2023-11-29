@@ -9,7 +9,7 @@ import org.springframework.lang.NonNull;
 import ru.clevertec.starter.annotation.SessionAware;
 import ru.clevertec.starter.property.SessionAwareProperties;
 import ru.clevertec.starter.sevice.SessionAwareInterceptor;
-import ru.clevertec.starter.sevice.SessionService;
+import ru.clevertec.starter.sevice.SessionAwareService;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -45,11 +45,11 @@ public class SessionAwareBeanPostProcessor implements BeanPostProcessor, BeanFac
     }
 
     private Object getSessionAwareProxy(Object bean) {
-        SessionService sessionService = beanFactory.getBean(SessionService.class);
+        SessionAwareService sessionAwareService = beanFactory.getBean(SessionAwareService.class);
         SessionAwareProperties sessionAwareProperties = beanFactory.getBean(SessionAwareProperties.class);
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(bean.getClass());
-        enhancer.setCallback(new SessionAwareInterceptor(bean, sessionService, sessionAwareProperties, beanFactory));
+        enhancer.setCallback(new SessionAwareInterceptor(bean, sessionAwareService, sessionAwareProperties, beanFactory));
         return isPresentDefaultConstructor(bean)
                 ? enhancer.create()
                 : enhancer.create(getNotDefaultConstructorArgTypes(bean), getNotDefaultConstructorArgs(bean));

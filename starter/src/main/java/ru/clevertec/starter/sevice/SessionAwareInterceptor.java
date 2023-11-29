@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 public class SessionAwareInterceptor implements MethodInterceptor {
 
     private final Object originalBean;
-    private final SessionService sessionService;
+    private final SessionAwareService sessionAwareService;
     private final SessionAwareProperties sessionAwareProperties;
     private final BeanFactory beanFactory;
 
@@ -89,8 +89,8 @@ public class SessionAwareInterceptor implements MethodInterceptor {
         return getFilteredStream(args)
                 .map(arg -> Arrays.stream(arg.getClass().getMethods())
                         .filter(method -> arg.getClass().isRecord()
-                                ? "login".equals(method.getName())
-                                : "getLogin".equals(method.getName()))
+                                ? "login" .equals(method.getName())
+                                : "getLogin" .equals(method.getName()))
                         .map(method -> {
                             try {
                                 return method.invoke(arg);
@@ -105,7 +105,7 @@ public class SessionAwareInterceptor implements MethodInterceptor {
 
     private String checkLoginForBlackList(String login, Set<String> mergedSet) {
         if (mergedSet.contains(login)) {
-            throw new BlackListException("%s is in black list for Sessions".formatted(login));
+            throw new BlackListException("%s is in black list for Sessions" .formatted(login));
         }
         return login;
     }
@@ -113,7 +113,7 @@ public class SessionAwareInterceptor implements MethodInterceptor {
     private Object[] getNewArgs(Object[] args, String login) {
         return Arrays.stream(args)
                 .map(arg -> arg instanceof Session
-                        ? sessionService.findByLogin(login)
+                        ? sessionAwareService.findByLogin(login)
                         : arg)
                 .toArray();
     }

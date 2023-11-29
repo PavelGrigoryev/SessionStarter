@@ -1,7 +1,7 @@
 ###findById
 GET http://localhost:8080/persons/1
 Accept: application/json
-Authorization: Helmut35
+Authorization: Helmut
 
 ###save
 POST http://localhost:8080/persons
@@ -9,7 +9,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "login": "Helmut",
+  "login": "Helmut35",
   "password": "qwerty123",
   "name": "Aleksandr"
 }

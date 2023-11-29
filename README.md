@@ -16,6 +16,21 @@
 
 ***
 
+### Инструкция запуска модуля для [session](session/src/main/java/ru/clevertec/session):
+
+* В него ходит стартер за сессиями через RestClient, он должен быть запущен первым.
+* У вас должна быть установлена [Postgresql](https://www.postgresql.org/download/) (P.S: Postgresql можно развернуть
+  в докере).
+* В Postgresql нужно создать базу данных. Как пример: "session". Sql: CREATE DATABASE session.
+* В [application.yaml](session/src/main/resources/application.yaml) в строчке №4 введите ваш username для
+  Postgresql, в строчке №5 введите ваш password для Postgresql.
+* При запуске приложения Liquibase сам создаст таблицу sessions.
+* Модуль готов к использованию,
+  запускаем [SessionApplication](session/src/main/java/ru/clevertec/session/SessionApplication.java).
+* HTTP запросы: [persons.http](session/src/main/resources/http/sessions.http).
+
+***
+
 ### Инструкция для использования стартера:
 
 * Запустить задачу в корне проекта SessionStarter `./gradlew -p starter publishToMavenLocal`
@@ -133,17 +148,43 @@ public class PersonController {
 }
 ````
 
+* P.S. Если хотим использовать свой модуль для хранения сессий, то нужно создать свой бин SessionAwareService и передать
+  в его конструктор свой RestClient. Пример:
+
+````java
+
+@Configuration
+public class ExampleConfig {
+
+    @Bean
+    public SessionAwareService sessionAwareService() {
+        RestClient restClient = RestClient.builder()
+                .baseUrl("your session service url")
+                .defaultHeaders(headers -> {
+                    headers.setAccept(List.of(MediaType.APPLICATION_XML));
+                    headers.setContentType(MediaType.APPLICATION_XML);
+                })
+                .build();
+        return new SessionAwareService(restClient);
+    }
+
+}
+````
+
 ***
 
 ### Можно протестировать на модуле [testdata](testdata/src/main/java/ru/clevertec/testdata). Для этого нужна:
 
+* Для работы должен сперва запущен модуль с
+  сессиями [SessionApplication](session/src/main/java/ru/clevertec/session/SessionApplication.java).
 * У вас должна быть установлена [Postgresql](https://www.postgresql.org/download/) (P.S: Postgresql можно развернуть
   в докере).
 * В Postgresql нужно создать базу данных. Как пример: "persons". Sql: CREATE DATABASE persons.
 * В [application.yaml](testdata/src/main/resources/application.yaml) в строчке №4 введите ваш username для
   Postgresql, в строчке №5 введите ваш password для Postgresql.
 * При запуске приложения Liquibase сам создаст таблицу persons.
-* Модуль готов к использованию.
+* Модуль готов к использованию,
+  запускаем [TestDataApplication](testdata/src/main/java/ru/clevertec/testdata/TestDataApplication.java).
 * HTTP запросы: [persons.http](testdata/src/main/resources/http/persons.http).
 
 ***

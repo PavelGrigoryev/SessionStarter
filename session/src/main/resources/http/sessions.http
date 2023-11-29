@@ -1,0 +1,12 @@
+###findByLoginOrSaveAndReturn
+POST http://localhost:8081/sessions
+Accept: application/json
+Content-Type: application/json
+
+{
+  "login": "Helmut"
+}
+
+###deleteAll
+DELETE http://localhost:8081/sessions
+Accept: application/json

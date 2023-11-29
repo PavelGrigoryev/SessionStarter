@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class Session {
 
-    private String id;
+    private Long id;
     private String login;
     private LocalDateTime openingTime;
 
