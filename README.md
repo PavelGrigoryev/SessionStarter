@@ -27,7 +27,7 @@
 * При запуске приложения Liquibase сам создаст таблицу sessions.
 * Модуль готов к использованию,
   запускаем [SessionApplication](session/src/main/java/ru/clevertec/session/SessionApplication.java).
-* HTTP запросы: [persons.http](session/src/main/resources/http/sessions.http).
+* HTTP запросы: [sessions.http](session/src/main/resources/http/sessions.http).
 
 ***
 
