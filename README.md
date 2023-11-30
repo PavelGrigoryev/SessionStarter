@@ -44,7 +44,7 @@ dependencies {
 
 * Зависимости `'org.springframework.boot:spring-boot-starter-web'`
   и `'org.springframework.boot:spring-boot-starter-data-jpa'` входят в стартер и будут подтянуты транзитивно.
-* Добавить в application.yaml своего проекта, где url это url сервиса хранения сессий:
+* Добавить в application.yaml своего проекта, где `session.aware.url: ?????` это url сервиса хранения сессий:
 
  ````yaml
 session:
@@ -53,7 +53,7 @@ session:
     url: http://localhost:8081/sessions
 ````
 
-* Если хотим очищать хранилище сессий, то в application.yaml нужно добавить `clean.enabled:true` и задать хронометраж
+* Если хотим очищать хранилище сессий, то в application.yaml нужно добавить `clean.enabled: true` и задать хронометраж
   очищения сессий `clean.cron: "00 00 00 * * *"`, означает что в 0 секунд 0 минут 0 часов каждого дня хранилище сессий
   будет очищено. Пример:
 
@@ -121,6 +121,12 @@ session:
 ````
 
 * Все blackList-ы заданные разными путями объединяются в один HashSet и фильтрация идёт по нему.
+* Если сервис с сессиями не будет запущен, или не доступен, или введён не верный url, то
+  вылетит [SessionServiceException](starter/src/main/java/ru/clevertec/starter/exception/SessionServiceException.java) с
+  сообщением `"Service with sessions is disabled or not available on this url"`.
+* Если сервис с сессиями вернет 500 статус, то
+  вылетит [SessionServiceException](starter/src/main/java/ru/clevertec/starter/exception/SessionServiceException.java) с
+  сообщением об ошибке от сервиса сессий.
 * Пример кода с использованием:
 
 ````java

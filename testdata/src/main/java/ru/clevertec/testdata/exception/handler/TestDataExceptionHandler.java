@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.clevertec.starter.exception.BlackListException;
 import ru.clevertec.starter.exception.SessionAwareException;
+import ru.clevertec.starter.exception.SessionServiceException;
 import ru.clevertec.testdata.exception.NotFoundException;
 import ru.clevertec.testdata.exception.ServiceException;
 import ru.clevertec.testdata.exception.UniqueException;
@@ -39,6 +40,11 @@ public class TestDataExceptionHandler {
     @ExceptionHandler(BlackListException.class)
     public ResponseEntity<ExceptionResponse> handleBlackListException(BlackListException exception) {
         return sendResponse(exception.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(SessionServiceException.class)
+    public ResponseEntity<ExceptionResponse> handleSessionServiceException(SessionServiceException exception) {
+        return sendResponse(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ResponseEntity<ExceptionResponse> sendResponse(String message, HttpStatus httpStatus) {
