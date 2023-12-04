@@ -116,7 +116,6 @@ session:
       - Helmut35
       - Sasha
     black-list-handlers:
-      - ru.clevertec.starter.sevice.DefaultBlackListHandler
       - ru.clevertec.testdata.config.PersonBlackListHandler
 ````
 

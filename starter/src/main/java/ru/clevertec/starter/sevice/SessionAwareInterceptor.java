@@ -29,6 +29,8 @@ public class SessionAwareInterceptor implements MethodInterceptor {
     private final SessionAwareProperties sessionAwareProperties;
     private final BeanFactory beanFactory;
 
+    private static final String LOGIN = "login";
+
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         if (method.isAnnotationPresent(SessionAware.class)) {
@@ -50,15 +52,15 @@ public class SessionAwareInterceptor implements MethodInterceptor {
 
     private Set<String> getMergedBlackList(SessionAware annotation) {
         String[] blackArray = annotation.blackList();
-        Set<String> blackSet = sessionAwareProperties.getBlackList();
         Class<? extends BlackListHandler>[] blackHandlerArray = annotation.blackListHandlers();
         Set<Class<? extends BlackListHandler>> blackHandlerSet = sessionAwareProperties.getBlackListHandlers();
-        Set<String> mergedBlackHandlers = Stream.concat(blackHandlerSet.stream(), Arrays.stream(blackHandlerArray))
+        Set<String> mergedBlackHandlers = Stream.concat(Arrays.stream(blackHandlerArray), blackHandlerSet.stream())
                 .map(beanFactory::getBean)
                 .map(BlackListHandler::getBlackList)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        return Stream.concat(Stream.concat(Arrays.stream(blackArray), blackSet.stream()), mergedBlackHandlers.stream())
+        return Stream.of(Arrays.asList(blackArray), mergedBlackHandlers)
+                .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
     }
 
@@ -80,32 +82,40 @@ public class SessionAwareInterceptor implements MethodInterceptor {
         return Arrays.stream(args)
                 .filter(arg -> !(arg instanceof Session))
                 .filter(Objects::nonNull)
-                .filter(arg -> Arrays.stream(arg.getClass().getDeclaredFields())
-                        .map(Field::getName)
-                        .anyMatch("login"::equals));
+                .filter(this::isAnyMatchLogin);
+    }
+
+    private boolean isAnyMatchLogin(Object arg) {
+        return Arrays.stream(arg.getClass().getDeclaredFields())
+                .map(Field::getName)
+                .anyMatch(LOGIN::equals);
     }
 
     private String getLoginIfExists(Object[] args) {
         return getFilteredStream(args)
-                .map(arg -> Arrays.stream(arg.getClass().getMethods())
-                        .filter(method -> arg.getClass().isRecord()
-                                ? "login" .equals(method.getName())
-                                : "getLogin" .equals(method.getName()))
-                        .map(method -> {
-                            try {
-                                return method.invoke(arg);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                throw new SessionAwareException("The object must be class or record and have getters");
-                            }
-                        })
-                        .map(Object::toString)
-                        .collect(Collectors.joining()))
+                .map(this::invokeGetter)
+                .collect(Collectors.joining());
+    }
+
+    private String invokeGetter(Object arg) {
+        return Arrays.stream(arg.getClass().getMethods())
+                .filter(method -> arg.getClass().isRecord()
+                        ? LOGIN.equals(method.getName())
+                        : "getLogin".equals(method.getName()))
+                .map(method -> {
+                    try {
+                        return method.invoke(arg);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        throw new SessionAwareException("The object must be class or record and have getters");
+                    }
+                })
+                .map(Object::toString)
                 .collect(Collectors.joining());
     }
 
     private String checkLoginForBlackList(String login, Set<String> mergedSet) {
         if (mergedSet.contains(login)) {
-            throw new BlackListException("%s is in black list for Sessions" .formatted(login));
+            throw new BlackListException("%s is in black list for Sessions".formatted(login));
         }
         return login;
     }

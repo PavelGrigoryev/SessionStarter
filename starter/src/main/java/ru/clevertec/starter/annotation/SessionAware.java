@@ -1,6 +1,7 @@
 package ru.clevertec.starter.annotation;
 
 import ru.clevertec.starter.sevice.BlackListHandler;
+import ru.clevertec.starter.sevice.PropertyBlackListHandler;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,6 +14,6 @@ public @interface SessionAware {
 
     String[] blackList() default {};
 
-    Class<? extends BlackListHandler>[] blackListHandlers() default {};
+    Class<? extends BlackListHandler>[] blackListHandlers() default {PropertyBlackListHandler.class};
 
 }

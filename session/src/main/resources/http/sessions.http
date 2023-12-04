@@ -7,6 +7,10 @@ Content-Type: application/json
   "login": "Helmut"
 }
 
+###findAllBlackLists
+GET http://localhost:8081/sessions
+Accept: application/json
+
 ###deleteAll
 DELETE http://localhost:8081/sessions
 Accept: application/json

@@ -16,8 +16,9 @@ import ru.clevertec.starter.bpp.SessionAwareBeanPostProcessor;
 import ru.clevertec.starter.property.SessionAwareProperties;
 import ru.clevertec.starter.property.SessionCleanerProperties;
 import ru.clevertec.starter.sevice.BlackListHandler;
-import ru.clevertec.starter.sevice.DefaultBlackListHandler;
+import ru.clevertec.starter.sevice.PropertyBlackListHandler;
 import ru.clevertec.starter.sevice.SessionAwareService;
+import ru.clevertec.starter.sevice.SessionServiceBlackListHandler;
 
 import java.util.List;
 
@@ -41,8 +42,13 @@ public class SessionAwareAutoConfiguration {
     }
 
     @Bean
-    public BlackListHandler blackListHandler() {
-        return new DefaultBlackListHandler();
+    public BlackListHandler propertyBlackListHandler(SessionAwareProperties properties) {
+        return new PropertyBlackListHandler(properties);
+    }
+
+    @Bean
+    public BlackListHandler sessionServiceBlackListHandler(SessionAwareService sessionAwareService) {
+        return new SessionServiceBlackListHandler(sessionAwareService);
     }
 
     @Bean
