@@ -53,32 +53,20 @@ session:
     url: http://localhost:8081/sessions
 ````
 
-* Если хотим очищать хранилище сессий, то в application.yaml нужно добавить `clean.enabled: true` и задать хронометраж
-  очищения сессий `clean.cron: "00 00 00 * * *"`, означает что в 0 секунд 0 минут 0 часов каждого дня хранилище сессий
-  будет очищено. Пример:
-
-````yaml
-session:
-  aware:
-    enabled: true
-    url: http://localhost:8081/sessions
-    clean:
-      enabled: true
-      cron: "00 00 00 * * *"
-````
-
 * Для работы стартера над методом нужно ставить
   аннотацию: [@SessionAware](starter/src/main/java/ru/clevertec/starter/annotation/SessionAware.java).
 * Параметры метода должны содержать [Session](starter/src/main/java/ru/clevertec/starter/model/Session.java) для
   отслеживания сессий. Если не будет, то
   вылетит [SessionAwareException](starter/src/main/java/ru/clevertec/starter/exception/SessionAwareException.java) c
   сообщением `"Must be a Session object in the parameters"`.
-* Так же параметры метода должны содержать объект, который содержит в себе поле String login. Можно использовать со
-  стартера [Authorization](starter/src/main/java/ru/clevertec/starter/model/Authorization.java).
-* Либо сделать свой. Объект должен быть либо рекордом, либо классом. И у него должны быть геттеры. Если геттеров не
-  будет, то
+* Так же параметры метода должны содержать объект, который содержит в себе поле String login. Если сделать свой, то
+  объект должен имплементировать со
+  стартера [Login](starter/src/main/java/ru/clevertec/starter/model/Login.java) и переопределять его метод.
+* Можно не имплементировать Login. Объект тогда должен быть классом. И у него должно быть поле login и должен быть
+  геттер на это поле.
+* Если геттеров не будет, то
   вылетит [SessionAwareException](starter/src/main/java/ru/clevertec/starter/exception/SessionAwareException.java) c
-  сообщением `"The object must be class or record and have getters"`.
+  сообщением `"The object must be a class or a record and have a Login implementation"`.
 * Если будет больше одного объекта с не пустым полем login(помимо сессии), то вылетит
   [SessionAwareException](starter/src/main/java/ru/clevertec/starter/exception/SessionAwareException.java) c
   сообщением `"More than one objects with non-blank field login detected"`.
@@ -95,14 +83,19 @@ session:
 @SessionAware(blackList = {"Ann", "Sasha"})
 ````
 
-* BlackList можно задать и через класс. Можно использовать
-  дефолтный [DefaultBlackListHandler](starter/src/main/java/ru/clevertec/starter/sevice/DefaultBlackListHandler.java).
-* Либо сделать свой. Класс должен
-  имплементировать [BlackListHandler](starter/src/main/java/ru/clevertec/starter/sevice/BlackListHandler.java) интерфейс
-  и переопределить метод `Set<String> getBlackList();`. Пример аннотации с blackListHandlers:
+* BlackList можно задать и через класс. По умолчанию, используется
+  [PropertyBlackListHandler](starter/src/main/java/ru/clevertec/starter/sevice/handler/impl/PropertyBlackListHandler.java),
+  который тянет значение из property/yaml.
+* Так же есть
+  бин [SessionServiceBlackListHandler](starter/src/main/java/ru/clevertec/starter/sevice/handler/impl/SessionServiceBlackListHandler.java).
+  По умолчанию отключен. Он берёт значения blackList из базы данных сессий. Подключить можно через аннотацию или
+  property/yaml файл.
+* Можно сделать свой blackList. Класс должен
+  имплементировать [BlackListHandler](starter/src/main/java/ru/clevertec/starter/sevice/handler/BlackListHandler.java)
+  интерфейс и переопределить метод `Set<String> getBlackList();`. Пример аннотации с blackListHandlers:
 
 ````java
-@SessionAware(blackListHandlers = DefaultBlackListHandler.class)
+@SessionAware(blackListHandlers = PersonBlackListHandler.class)
 ````
 
 * И наконец blackList можно задать через application.yaml. Пример:
@@ -137,7 +130,7 @@ public class PersonController {
 
     private final PersonService personService;
 
-    @SessionAware(blackList = {"Ann", "Sasha"}, blackListHandlers = DefaultBlackListHandler.class)
+    @SessionAware(blackList = {"Ann", "Sasha"}, blackListHandlers = SessionServiceBlackListHandler.class)
     @GetMapping("/{id}")
     public ResponseEntity<PersonResponse> findById(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false)
                                                    Authorization authorization,
@@ -151,29 +144,6 @@ public class PersonController {
     @PostMapping
     public ResponseEntity<PersonResponse> save(@RequestBody PersonRequest request, Session session) {
         return ResponseEntity.status(HttpStatus.CREATED).body(personService.save(request));
-    }
-
-}
-````
-
-* P.S. Если хотим задать свои настройки для RestClient, то нужно создать свой бин SessionAwareService и передать
-  в его конструктор настроенный RestClient. Пример:
-
-````java
-
-@Configuration
-public class ExampleConfig {
-
-    @Bean
-    public SessionAwareService sessionAwareService() {
-        RestClient restClient = RestClient.builder()
-                .baseUrl("your session service url")
-                .defaultHeaders(headers -> {
-                    headers.setAccept(List.of(MediaType.APPLICATION_XML));
-                    headers.setContentType(MediaType.APPLICATION_XML);
-                })
-                .build();
-        return new SessionAwareService(restClient);
     }
 
 }

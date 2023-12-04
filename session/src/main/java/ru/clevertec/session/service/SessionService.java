@@ -8,6 +8,8 @@ public interface SessionService {
 
     SessionResponse findByLoginOrSaveAndReturn(SessionRequest request);
 
+    SessionResponse addLoginToBlackList(SessionRequest request);
+
     BlackListResponse findAllBlackLists();
 
     String deleteAll();

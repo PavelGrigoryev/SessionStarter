@@ -7,6 +7,15 @@ Content-Type: application/json
   "login": "Helmut"
 }
 
+###addLoginToBlackList
+POST http://localhost:8081/sessions/blackList
+Accept: application/json
+Content-Type: application/json
+
+{
+  "login": "Sunny"
+}
+
 ###findAllBlackLists
 GET http://localhost:8081/sessions
 Accept: application/json

@@ -1,4 +1,4 @@
-package ru.clevertec.starter.sevice;
+package ru.clevertec.starter.sevice.handler;
 
 import java.util.Set;
 

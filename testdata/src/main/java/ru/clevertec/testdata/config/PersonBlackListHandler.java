@@ -1,7 +1,7 @@
 package ru.clevertec.testdata.config;
 
 import org.springframework.stereotype.Component;
-import ru.clevertec.starter.sevice.BlackListHandler;
+import ru.clevertec.starter.sevice.handler.BlackListHandler;
 
 import java.util.Set;
 

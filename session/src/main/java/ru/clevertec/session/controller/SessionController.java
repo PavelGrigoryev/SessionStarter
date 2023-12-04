@@ -26,6 +26,11 @@ public class SessionController {
         return ResponseEntity.status(HttpStatus.OK).body(sessionService.findByLoginOrSaveAndReturn(request));
     }
 
+    @PostMapping("/blackList")
+    public ResponseEntity<SessionResponse> addLoginToBlackList(@RequestBody SessionRequest request) {
+        return ResponseEntity.status(HttpStatus.OK).body(sessionService.addLoginToBlackList(request));
+    }
+
     @GetMapping
     public ResponseEntity<BlackListResponse> findAllBlackLists() {
         return ResponseEntity.status(HttpStatus.OK).body(sessionService.findAllBlackLists());

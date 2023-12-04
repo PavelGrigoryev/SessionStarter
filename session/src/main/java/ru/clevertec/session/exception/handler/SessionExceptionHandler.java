@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import ru.clevertec.session.exception.SessionNotFoundException;
 import ru.clevertec.session.exception.SessionServiceException;
 import ru.clevertec.session.exception.model.ExceptionResponse;
 
@@ -14,13 +15,18 @@ public class SessionExceptionHandler {
 
     @ExceptionHandler(SessionServiceException.class)
     public ResponseEntity<ExceptionResponse> handleServiceException(SessionServiceException exception) {
-        return sendResponse(exception.getMessage());
+        return sendResponse(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private ResponseEntity<ExceptionResponse> sendResponse(String message) {
+    @ExceptionHandler(SessionNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleNotFoundException(SessionNotFoundException exception) {
+        return sendResponse(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    private ResponseEntity<ExceptionResponse> sendResponse(String message, HttpStatus httpStatus) {
         ExceptionResponse response = new ExceptionResponse(message);
         log.error(response.toString());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        return ResponseEntity.status(httpStatus).body(response);
     }
 
 }

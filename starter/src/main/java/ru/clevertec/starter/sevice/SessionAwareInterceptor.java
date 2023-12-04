@@ -9,6 +9,7 @@ import ru.clevertec.starter.exception.BlackListException;
 import ru.clevertec.starter.exception.SessionAwareException;
 import ru.clevertec.starter.model.Session;
 import ru.clevertec.starter.property.SessionAwareProperties;
+import ru.clevertec.starter.sevice.handler.BlackListHandler;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -28,8 +29,6 @@ public class SessionAwareInterceptor implements MethodInterceptor {
     private final SessionAwareService sessionAwareService;
     private final SessionAwareProperties sessionAwareProperties;
     private final BeanFactory beanFactory;
-
-    private static final String LOGIN = "login";
 
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
@@ -88,7 +87,7 @@ public class SessionAwareInterceptor implements MethodInterceptor {
     private boolean isAnyMatchLogin(Object arg) {
         return Arrays.stream(arg.getClass().getDeclaredFields())
                 .map(Field::getName)
-                .anyMatch(LOGIN::equals);
+                .anyMatch("login"::equals);
     }
 
     private String getLoginIfExists(Object[] args) {
@@ -99,14 +98,12 @@ public class SessionAwareInterceptor implements MethodInterceptor {
 
     private String invokeGetter(Object arg) {
         return Arrays.stream(arg.getClass().getMethods())
-                .filter(method -> arg.getClass().isRecord()
-                        ? LOGIN.equals(method.getName())
-                        : "getLogin".equals(method.getName()))
+                .filter(method -> "getLogin".equals(method.getName()))
                 .map(method -> {
                     try {
                         return method.invoke(arg);
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new SessionAwareException("The object must be class or record and have getters");
+                        throw new SessionAwareException("The object must be a class or a record and have a Login implementation");
                     }
                 })
                 .map(Object::toString)

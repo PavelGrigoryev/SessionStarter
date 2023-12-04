@@ -1,7 +1,7 @@
 package ru.clevertec.starter.annotation;
 
-import ru.clevertec.starter.sevice.BlackListHandler;
-import ru.clevertec.starter.sevice.PropertyBlackListHandler;
+import ru.clevertec.starter.sevice.handler.BlackListHandler;
+import ru.clevertec.starter.sevice.handler.impl.PropertyBlackListHandler;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

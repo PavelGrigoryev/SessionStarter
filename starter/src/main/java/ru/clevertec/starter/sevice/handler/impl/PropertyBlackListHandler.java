@@ -1,7 +1,8 @@
-package ru.clevertec.starter.sevice;
+package ru.clevertec.starter.sevice.handler.impl;
 
 import lombok.RequiredArgsConstructor;
 import ru.clevertec.starter.property.SessionAwareProperties;
+import ru.clevertec.starter.sevice.handler.BlackListHandler;
 
 import java.util.Set;
 

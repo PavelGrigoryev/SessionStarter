@@ -13,3 +13,7 @@ spring:
     open-in-view: false
 server:
   port: 8081
+session:
+  clean:
+    enabled: true
+  cron: "00 00 00 * * *"

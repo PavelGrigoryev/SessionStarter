@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.session.dto.BlackListResponse;
 import ru.clevertec.session.dto.SessionRequest;
 import ru.clevertec.session.dto.SessionResponse;
+import ru.clevertec.session.exception.SessionNotFoundException;
 import ru.clevertec.session.exception.SessionServiceException;
 import ru.clevertec.session.mapper.SessionMapper;
 import ru.clevertec.session.model.BlackList;
@@ -31,6 +32,18 @@ public class SessionServiceImpl implements SessionService {
         return sessionRepository.findByLogin(request.login())
                 .map(sessionMapper::toResponse)
                 .orElseGet(() -> save(request));
+    }
+
+    @Override
+    @Transactional
+    public SessionResponse addLoginToBlackList(SessionRequest request) {
+        return sessionRepository.findByLogin(request.login())
+                .map(session -> {
+                    blackListRepository.save(new BlackList().setLogin(session.getLogin()));
+                    return sessionMapper.toResponse(session);
+                })
+                .orElseThrow(() -> new SessionNotFoundException("Session login %s is not found, cant add it to blackList"
+                        .formatted(request.login())));
     }
 
     @Override
